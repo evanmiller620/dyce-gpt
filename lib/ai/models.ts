@@ -3,7 +3,7 @@ import {
   customProvider,
 } from 'ai';
 
-export const DEFAULT_CHAT_MODEL: string = 'chat-model-excuse';
+export const DEFAULT_CHAT_MODEL: string = 'chat-model-baby';
 
 export const myProvider = customProvider({
   languageModels: {
