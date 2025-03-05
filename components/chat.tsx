@@ -33,129 +33,82 @@ function useMockChat({ id, body, initialMessages, generateId, onFinish, onError 
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const api = '/api/chat';
+
   const append = (message: Message | CreateMessage, chatRequestOptions?: ChatRequestOptions): Promise<string | null | undefined> => {
-    return new Promise((resolve) => {
+    return new Promise(async () => {
       const userMessage = { id: generateId(), body, sender: 'user', content: message.content, role: 'user' as const };
-      internalAppend(userMessage).then(() => {
-        if (api) {
-          const responseStream = fetch(api, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ id, messages: messages, selectedChatModel: body.selectedChatModel }),
-          });
-
-          responseStream.then(response => {
-            if (!response.ok) {
-              if (onError) onError('Error occurred while fetching AI response');
-              setIsLoading(false);
-              return;
-            }
-
-            reader = response.body?.getReader();
-            const decoder = new TextDecoder();
-            let aiResponseContent = '';
-
-            reader?.read().then(function processText({ done, value }) {
-              if (done) {
-                const extractedId = aiResponseContent.split("|MIDDLE|")[0];
-                const data = aiResponseContent.split("|MIDDLE|")[1];
-                const aiResponse = { id: extractedId, body, sender: 'ai', content: data, role: 'system' as const };
-                internalAppend(aiResponse).then(() => {
-                  setIsLoading(false);
-                  if (onFinish) onFinish(aiResponse);
-                });
-                return;
-              }
-
-              aiResponseContent += decoder.decode(value, { stream: true });
-              reader?.read().then(processText);
-            });
-          }).catch(err => {
-            if (err.name === 'AbortError') {
-              if (onError) onError('AI response stopped');
-            } else {
-              if (onError) onError('Network error occurred while fetching AI response');
-            }
-            setIsLoading(false);
-          });
-          resolve('Message appended successfully');
-        }
-      });
+      await internalAppend(userMessage)
+      await test(userMessage);
     });
   };
 
-  const internalAppend = (message: Message | CreateMessage, chatRequestOptions?: ChatRequestOptions): Promise<string | null | undefined> => {
+  const internalAppend = (message: Message, chatRequestOptions?: ChatRequestOptions): Promise<string | null | undefined> => {
     return new Promise((resolve) => {
-      const resolvedMessage: Message = {
-        ...message,
-        id: message.id || generateId(),
-      };
-
       setMessages((prevMessages) => {
-        const newMessages = [...prevMessages, resolvedMessage];
+        const newMessages = [...prevMessages, message];
         return newMessages;
       });
 
       resolve('Message appended successfully');
     });
   };
-  const api = '/api/chat';
-  let reader: ReadableStreamDefaultReader<Uint8Array> | undefined = undefined;
+
+  const test = async (userMessage : Message | undefined) => {
+    setIsLoading(true);
+    setInput('');
+    let messagesToSend = messages;
+    if (userMessage) {
+      messagesToSend = [...messages, userMessage];
+    }
+    const responseStream = fetch(api, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id, messages: messagesToSend, selectedChatModel: body.selectedChatModel }),
+    });
+
+    responseStream.then(response => {
+      if (!response.ok) {
+        if (onError) onError('Error occurred while fetching AI response');
+        return;
+      }
+
+      let reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let aiResponseContent = '';
+
+      reader?.read().then(function processText({ done, value }) {
+        if (done) {
+          const extractedId = aiResponseContent.split("|MIDDLE|")[0];
+          const data = aiResponseContent.split("|MIDDLE|")[1];
+          const aiResponse = { id: extractedId, body, sender: 'ai', content: data, role: 'system' as const };
+          internalAppend(aiResponse).then(() => {
+            if (onFinish) onFinish(aiResponse);
+          });
+          return;
+        }
+        aiResponseContent += decoder.decode(value, { stream: true });
+        reader?.read().then(processText);
+      setIsLoading(false);
+      });
+    }).catch(err => {
+      if (err.name === 'AbortError') {
+        if (onError) onError('AI response stopped');
+      } else {
+        if (onError) onError('Network error occurred while fetching AI response');
+      }
+      setIsLoading(false);
+    });
+  }
+
   const handleSubmit = async () => {
     if (!input.trim()) return;
-
     const userMessage = { id: generateId(), body, sender: 'user', content: input, role: 'user' as const };
-    internalAppend(userMessage).then(() => {
-      setInput('');
-      setIsLoading(true);
-
-      if (api) {
-        const responseStream = fetch(api, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ id, messages: [...messages, userMessage], selectedChatModel: body.selectedChatModel }),
-        });
-
-        responseStream.then(response => {
-          if (!response.ok) {
-            if (onError) onError('Error occurred while fetching AI response');
-            setIsLoading(false);
-            return;
-          }
-
-          reader = response.body?.getReader();
-          const decoder = new TextDecoder();
-          let aiResponseContent = '';
-
-          reader?.read().then(function processText({ done, value }) {
-            if (done) {
-              const extractedId = aiResponseContent.split("|MIDDLE|")[0];
-              const data = aiResponseContent.split("|MIDDLE|")[1];
-              const aiResponse = { id: extractedId, body, sender: 'ai', content: data, role: 'system' as const };
-              internalAppend(aiResponse).then(() => {
-                setIsLoading(false);
-                if (onFinish) onFinish(aiResponse);
-              });
-              return;
-            }
-
-            aiResponseContent += decoder.decode(value, { stream: true });
-            reader?.read().then(processText);
-          });
-        }).catch(err => {
-          if (err.name === 'AbortError') {
-            if (onError) onError('AI response stopped');
-          } else {
-            if (onError) onError('Network error occurred while fetching AI response');
-          }
-          setIsLoading(false);
-        });
-      }
-    });
+    setInput('');
+    await internalAppend(userMessage)
+    await test(userMessage);
   };
 
   const stop = () => {
@@ -164,51 +117,8 @@ function useMockChat({ id, body, initialMessages, generateId, onFinish, onError 
   };
 
   const handleReload = async (): Promise<string | null | undefined> => {
-    return new Promise(async (resolve, reject) => {
-      if (api) {
-        const responseStream = fetch(api, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ id, messages: messages, selectedChatModel: body.selectedChatModel }),
-        });
-
-        responseStream.then(response => {
-          if (!response.ok) {
-            if (onError) onError('Error occurred while fetching AI response');
-            setIsLoading(false);
-            return;
-          }
-
-          reader = response.body?.getReader();
-          const decoder = new TextDecoder();
-          let aiResponseContent = '';
-
-          reader?.read().then(function processText({ done, value }) {
-            if (done) {
-              const extractedId = aiResponseContent.split("|MIDDLE|")[0];
-              const data = aiResponseContent.split("|MIDDLE|")[1];
-              const aiResponse = { id: extractedId, body, sender: 'ai', content: data, role: 'system' as const };
-              internalAppend(aiResponse).then(() => {
-                setIsLoading(false);
-                if (onFinish) onFinish(aiResponse);
-              });
-              return;
-            }
-
-            aiResponseContent += decoder.decode(value, { stream: true });
-            reader?.read().then(processText);
-          });
-        }).catch(err => {
-          if (err.name === 'AbortError') {
-            if (onError) onError('AI response stopped');
-          } else {
-            if (onError) onError('Network error occurred while fetching AI response');
-          }
-          setIsLoading(false);
-        });
-      }
+    return new Promise(async () => {
+      await test(undefined);
     });
   };
   const error = null;

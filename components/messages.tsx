@@ -59,7 +59,7 @@ function PureMessages({
 
       {isLoading &&
         messages.length > 0 &&
-        messages[messages.length - 1].role === 'user' && <ThinkingMessage />}
+         <ThinkingMessage />}
 
       <div
         ref={messagesEndRef}
