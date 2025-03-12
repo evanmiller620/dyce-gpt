@@ -26,6 +26,7 @@ import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { getWeather } from '@/lib/ai/tools/get-weather';
 import { delay } from 'framer-motion';
+import Dyce from '../../../../dyce';
 
 export const maxDuration = 60;
 
@@ -42,7 +43,20 @@ export async function POST(request: Request) {
   if (!session || !session.user || !session.user.id) {
     return new Response('Unauthorized', { status: 401 });
   }
-
+  const apiKey = '7181cde45d0c9c426811b322a84d69cf9e87518339e51f3e01d82427a3bc302c';
+  const userId = "apple";
+  const amount = 1;
+  const dyce = new Dyce(apiKey);
+  try {
+    const ret = await dyce.requestPayment(userId, amount);
+    if (!ret) {
+      return new Response('Payment returned failure', { status: 400 });
+    }
+    console.log(ret);
+  } catch (error) {
+    console.error(error);
+    return new Response('Payment threw error', { status: 400 });
+  }
   const userMessage = getMostRecentUserMessage(messages);
 
   if (!userMessage) {
@@ -150,7 +164,8 @@ export async function POST(request: Request) {
   await saveMessages({
     messages: [returnMessage],
   });
-  await simDelay(selectedChatModel);
+  // await simDelay(selectedChatModel);
+
   return new Response(messageId+"|MIDDLE|"+customText, { status: 200 });
 }
 
