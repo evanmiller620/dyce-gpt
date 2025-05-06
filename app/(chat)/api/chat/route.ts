@@ -26,6 +26,7 @@ import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { getWeather } from '@/lib/ai/tools/get-weather';
 import { delay } from 'framer-motion';
+// @ts-ignore
 import Dyce from 'dyce';
 
 export const maxDuration = 60;

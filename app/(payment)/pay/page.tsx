@@ -7,8 +7,8 @@ import { toast } from 'sonner';
 
 import { PayForm } from '@/components/pay-form';
 import { SubmitButton } from '@/components/submit-button';
+// @ts-ignore
 import Dyce from "dyce"
-// import Dyce from 'dyce/index.js';
 
 export default function Page() {
   const router = useRouter();

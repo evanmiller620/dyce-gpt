@@ -99,8 +99,8 @@ importers:
         specifier: ^0.34.0
         version: 0.34.1(@neondatabase/serverless@0.9.5)(@opentelemetry/api@1.9.0)(@types/pg@8.11.6)(@types/react@18.3.12)(@vercel/postgres@0.10.0)(postgres@3.4.5)(react@19.0.0-rc-45804af1-20241021)
       dyce:
-        specifier: ^0.1.2
-        version: 0.1.2
+        specifier: ^0.2.1
+        version: 0.2.1
       ethers:
         specifier: ^6.13.5
         version: 6.13.7(bufferutil@4.0.8)
@@ -2106,8 +2106,8 @@ packages:
       sqlite3:
         optional: true
 
-  dyce@0.1.2:
-    resolution: {integrity: sha512-kivfFpLWYkUeO+StE1L9pLN6NsMBT6tiFwwgcsy8PLWFNKhf5L9asYU8OpEiYexijihtKCEcOH514w5+7TUNiQ==}
+  dyce@0.2.1:
+    resolution: {integrity: sha512-HXN+WSy8syu1PqgZTiKRqItc/M4XaMQv3l9eds09q8/xG7aAoD6rR6mtbk5YFCoKrkJjONA+XZAF+Zl7jd886Q==}
 
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
@@ -5370,7 +5370,7 @@ snapshots:
       postgres: 3.4.5
       react: 19.0.0-rc-45804af1-20241021
 
-  dyce@0.1.2: {}
+  dyce@0.2.1: {}
 
   eastasianwidth@0.2.0: {}
 
