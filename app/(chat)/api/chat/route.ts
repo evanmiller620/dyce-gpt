@@ -26,7 +26,8 @@ import { updateDocument } from '@/lib/ai/tools/update-document';
 import { requestSuggestions } from '@/lib/ai/tools/request-suggestions';
 import { getWeather } from '@/lib/ai/tools/get-weather';
 import { delay } from 'framer-motion';
-import Dyce from '../../../../dyce';
+import Dyce from 'dyce/index.js';
+// import Dyce from 'dyce';
 
 export const maxDuration = 60;
 
@@ -43,7 +44,7 @@ export async function POST(request: Request) {
   if (!session || !session.user || !session.user.id) {
     return new Response('Unauthorized', { status: 401 });
   }
-  const apiKey = '7181cde45d0c9c426811b322a84d69cf9e87518339e51f3e01d82427a3bc302c';
+  const apiKey = '531195068840511842be81710acc031cbcdc27cc961fa0614f233ba334ead097';
   const userId = "apple";
   const amount = 1;
   const dyce = new Dyce(apiKey);
@@ -75,55 +76,13 @@ export async function POST(request: Request) {
   });
 
   const excuses: string[] =  [
-    "Got it, thanks!",
-    "Understood! I'll get around to it.",
-    "Okay, sounds good!",
-    "Noted, appreciate it.",
-    "Thanks for the update!",
-    "Alright, I'll look into it.",
-    "Sounds perfect, I'll handle it.",
-    "Okay, I'll get right on it.",
-    "Got your message, thanks!",
-    "Thanks for the heads-up!",
-    "I'll keep that in mind.",
-    "Alright, I'll make sure to do that.",
-    "Sure thing, I'll follow up.",
-    "Thanks for the clarification.",
-    "I see, I'll act accordingly.",
-    "Got it, I'll update you soon.",
-    "Noted, thanks for sharing.",
-    "Sounds good to me.",
-    "Will do, thanks for letting me know.",
-    "Okay, I've got it covered."
+    "I would answer but I'm too busy thinking about cryptocurrency.",
   ];
   const dumb: string[] = [
-    "Why not both?",
-    "I thought that was obvious.",
-    "I have no idea, maybe aliens.",
-    "It's probably a glitch in the matrix.",
-    "I'm not sure, but let's Google it.",
-    "That's a great question, I'll ask my dog.",
-    "I think it's broken, try turning it off and on.",
-    "That's above my pay grade.",
-    "I think it's the Wi-Fi's fault.",
-    "Can I get back to you after a nap?",
-    "It's definitely a pineapple situation.",
-    "I was just about to ask you the same thing.",
-    "I'm not sure, I just woke up.",
-    "Let's just blame it on the weather.",
-    "Hmm, maybe it's a quantum thing?",
-    "I'm too tired to think right now.",
-    "Could be a glitch in the space-time continuum.",
-    "I think it's just one of those days.",
-    "I'm out of ideas, let's flip a coin.",
-    "Maybe it's just magic, who knows?"
-  ];
+    "I hate crypto :(",
+    ];
   const baby: string[] = [
-    "ga ga",
-    "ba ba",
-    "waaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-    "goo goo",
-    "skibidi"
+    "That is very correct. Each message will charge you one USDC token on the ethereum network."
   ];
 
   const generateCustomText = (selectedChatModel: string) => {
@@ -134,14 +93,13 @@ export async function POST(request: Request) {
       return dumb[message];
     } else {
       const message = Math.floor(Math.random() * (5));
-      return baby[message];
+      return baby[0];
     }
   };
 
   const simDelay = async (selectedChatModel: string): Promise<void> => {
     let delayTime = 0;
     if (selectedChatModel === 'chat-model-dumb') {
-      delayTime = Math.floor(Math.random() * (7000)) + 2000;
     } else {
       delayTime = 0;
     }

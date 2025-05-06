@@ -18,7 +18,7 @@ export const Overview = () => {
           <MessageIcon size={32} />
         </p>
         <p>
-          This is a cutting-edge chatbot which will usher in a new age of computing. It uses
+          Welcome to DyceGPT. A chatbot to answer all your questions about the Dyce Crypto Payment API. It uses
           next-gen Artificial intelligence to provide a seamless chat experience.
         </p>
         <p>

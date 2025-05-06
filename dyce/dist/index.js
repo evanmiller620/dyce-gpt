@@ -1,14 +1,15 @@
-import { connectWallet, approveLimit, getWalletAddress, transferTokens } from "./transact";
+import { connectWallet, approveLimit, getWalletAddress, transferTokens } from "../transact";
 
 class Dyce {
   constructor(apiKey) {
     this.apiKey = apiKey;
-    this.baseURL = "http://localhost:8080"; // Local
-    // this.baseURL = "https://0fxllf5l0m.execute-api.us-east-1.amazonaws.com/main/"; // Deployed
+    this.baseURL = "https://0fxllf5l0m.execute-api.us-east-1.amazonaws.com/main/";
+    
     try {
       connectWallet();
       this.connected = true;
     } catch (error) {
+      console.log(error)
       this.connected = false;
     }
   }
@@ -24,7 +25,6 @@ class Dyce {
         body: body ? JSON.stringify(body) : null
       };
       const response = await fetch(`${this.baseURL}/${endpoint}`, options);
-      // console.log(response)
       return response;
     } catch (error) {
       console.error("Request failed: ", error);
@@ -50,6 +50,7 @@ class Dyce {
       await approveLimit(businessWallet, parseFloat(amount));
     } catch (Error) {
       console.error("Failed to approve spending!");
+      console.log(Error);
       return false;
     }
     try {
@@ -79,13 +80,14 @@ class Dyce {
     return true;
   }
 
-  async transferTokens(recipient, amount) {
+  async transferTokens(amount) {
     if (!this.connected) throw new Error("Failed to connect to MetaMask!");
     const businessWallet = await this.getWalletAddress();
     try {
       await transferTokens(businessWallet, parseFloat(amount));
     } catch (Error) {
       console.error("Failed to transfer tokens!");
+      console.log(Error);
       return false;
     }
     return true;

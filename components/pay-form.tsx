@@ -23,7 +23,7 @@ export function PayForm({
           htmlFor="spendAmount"
           className="text-zinc-600 font-normal dark:text-zinc-400"
         >
-          Cryptocoin
+          USDC
         </Label>
 
         <Input

@@ -6,8 +6,8 @@ import { ThemeProvider } from '@/components/theme-provider';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'ChatRUs',
-  description: 'Chat R Us. Chat with Cutting Edge AI!',
+  title: 'DyceGPT',
+  description: 'Chat with Cutting Edge AI!',
 };
 
 export const viewport = {
